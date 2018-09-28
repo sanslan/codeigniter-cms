@@ -18,7 +18,7 @@
                     <a href="#subCategories" data-toggle="collapse" class="collapsed"><i class="lnr lnr-file-empty"></i> <span>Posts</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
                     <div id="subCategories" class="collapse ">
                         <ul class="nav">
-                            <li><a href="/admin/posts" class="">All posts</a></li>
+                            <li><a href="/admin/post/list" class="">All posts</a></li>
                             <li><a href="/admin/post/add" class="">Add post</a></li>
                         </ul>
                     </div>

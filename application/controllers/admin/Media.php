@@ -22,113 +22,46 @@ class Media extends CI_Controller {
     public function list()
     {
 
-        $data="";
+        $config['base_url'] = site_url('admin/page/list');
+        $config['total_rows'] = $this->db->get('pages')->num_rows();
+        $config['per_page'] = 60;
+        $this->pagination->initialize($config);
+
+
+        $this->load->model("upload_model");
+        $limit= $config['per_page'];
+        $page_id = $this->uri->segment(4) ? $this->uri->segment(4) : 1;
+        $order_by = $this->input->get('order_by') ? $this->input->get('order_by') : "id";
+        $order = $this->input->get('order') ? $this->input->get('order') : "DESC";
+        $offset =($page_id - 1) * $limit;
+        $data['pages'] = $this->upload_model->list_files( $limit , $offset, $order_by, $order );
+        $data['total_rows']= $config['total_rows'];
+        $data['per_page']= $config['per_page'];
+
         $this->load->view('admin/includes/header.php');
         $this->load->view('admin/includes/sidebar.php');
         $this->load->view('admin/media/list.php',$data);
         $this->load->view('admin/includes/footer.php');
     }
-    public function add()
-    {
-        $this->form_validation->set_rules('title', 'Title', 'required|min_length[3]'
-        );
-        $this->form_validation->set_rules('body', 'Body', 'required');
-
-        $this->form_validation->set_error_delimiters('<div class="alert alert-danger mt-2">', '</div>');
-
-        if ($this->form_validation->run() === FALSE)
-        {
-            $this->load->view('admin/includes/header.php');
-            $this->load->view('admin/includes/sidebar.php');
-            $this->load->view('admin/page/add.php');
-            $this->load->view('admin/includes/footer.php');
-        }
-        else
-        {
-            $title = $this->input->post("title");
-            $body = $this->input->post("body");
-            $slug= $this->get_uniq_slug( 'pages', 'slug', url_title($title) );
-         
-            $this->load->model("page_model");
-            $this->page_model->add_page( $title, $slug, $body );
-            $this->session->set_flashdata('success', 'New page created');
-
-            redirect("admin/page/add");
-        }
-    }
-
-    //EDIT PAGE
-    public function edit($slug)
-    {
-        $this->form_validation->set_rules('title', 'Title', 'required|min_length[3]'
-        );
-        $this->form_validation->set_rules('body', 'Body', 'required');
-
-        $this->form_validation->set_error_delimiters('<div class="alert alert-danger mt-2">', '</div>');
-
-        if ($this->form_validation->run() === FALSE)
-        {
-            $this->load->model('page_model');
-            $page = $this->page_model->get_page($slug);
-            $data['page'] = $page;
-            $this->load->view('admin/includes/header');
-            $this->load->view('admin/includes/sidebar');
-            $this->load->view('admin/page/edit',$data);
-            $this->load->view('admin/includes/footer');
-        }
-        else
-        {
-            $this->load->model('page_model');
-            $page = $this->page_model->get_page($slug);
-            $title = $this->input->post("title");
-            $body = $this->input->post("body");
-            $newslug= $this->get_uniq_slug( 'pages', 'slug', url_title($title), $page->id );
-
-            $this->page_model->edit_page( $title, $newslug, $body, $slug );
-            $this->session->set_flashdata('success', 'Page updated');
-
-            redirect("admin/page/list");
-        }
-    }
-
-    //DELETE PAGE
-    public function delete( $id, $page_id )
-    {
-        $this->db->where('id', $id);
-        $this->db->delete('pages');
-
-        redirect("admin/page/list/".$page_id);
-        
-    }
-
-    public function bulk_delete()
-    {
-        $pages=$this->input->post('pages');
-        if(!empty($pages))
-        {
-            foreach($pages as $page_id){
-                $this->db->where('id', $page_id);
-                $this->db->delete('pages');
+     
+    public function delete(){
+        $file_id = $this->input->post('file_to_delete');
+        $query=$this->db->get_where('files', array( 'id' => $file_id));
+        $file = $query->row();
+        $file_ext = explode('.',$file->name)[1];
+        $length =  (strlen($file->name) - strlen($file_ext) - 1);
+        $thumb_file = substr( $file->name, 0, $length ). "_thumb." . $file_ext;
+        if(file_exists($file->name)){
+            unlink($file->name);
+            if(file_exists($thumb_file)){
+                unlink($thumb_file);
             }
-            
-            redirect("admin/page/list");
+            $this->db->where('id', $file->id);
+            $this->db->delete('files');
         }
+        redirect('admin/media/list');
     }
-
-    private function get_uniq_slug( $table, $field, $slug, $id=null)
-    {
-        if($id)
-        {
-            $this->db->where('id !=', $id);
-        }
-        $query = $this->db->select( $field )->from( $table )->where( $field, $slug )->get();
-        $row = $query->row();
-        if($row)
-        {
-            return $slug . "_". mt_rand();
-        }
-        return $slug;
-    }
+    
 
   
 }
