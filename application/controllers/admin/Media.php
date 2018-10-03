@@ -17,6 +17,32 @@ class Media extends CI_Controller {
 
         $this->load->database();
     }
+    private function list_files(){
+        $config['base_url'] = site_url('admin/page/list');
+        $config['total_rows'] = $this->db->get('pages')->num_rows();
+        $config['per_page'] = 60;
+        $this->pagination->initialize($config);
+
+        $this->load->model("upload_model");
+        $limit= $config['per_page'];
+        $page_id = $this->uri->segment(4) ? $this->uri->segment(4) : 1;
+        $order_by = $this->input->get('order_by') ? $this->input->get('order_by') : "id";
+        $order = $this->input->get('order') ? $this->input->get('order') : "DESC";
+        $offset =($page_id - 1) * $limit;
+        $data['files'] = $this->upload_model->list_files( $limit , $offset, $order_by, $order );
+        $data['total_rows']= $config['total_rows'];
+        $data['per_page']= $config['per_page'];
+        return $data;
+    }
+    public function files(){
+        $data = $this->list_files();
+        $this->load->view( 'admin/includes/list_files.php', $data );
+
+    }
+    public function select_thumbnail(){
+        $data = $this->list_files();
+        $this->load->view( 'admin/includes/thumbnail_image.php', $data );
+    }
 
     //List pages
     public function list()
@@ -34,7 +60,7 @@ class Media extends CI_Controller {
         $order_by = $this->input->get('order_by') ? $this->input->get('order_by') : "id";
         $order = $this->input->get('order') ? $this->input->get('order') : "DESC";
         $offset =($page_id - 1) * $limit;
-        $data['pages'] = $this->upload_model->list_files( $limit , $offset, $order_by, $order );
+        $data['files'] = $this->upload_model->list_files( $limit , $offset, $order_by, $order );
         $data['total_rows']= $config['total_rows'];
         $data['per_page']= $config['per_page'];
 

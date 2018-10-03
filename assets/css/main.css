@@ -1875,3 +1875,19 @@ ul.activity-timeline > li {
   display: block;
   margin: auto;
 }
+.ImagePreviewBox img{
+  max-width: 100%;
+  max-height: 182px;
+  object-fit: cover;
+}
+#thumb-image{
+  margin: 20px auto 10px;
+  max-width: 100%;
+  display: block;
+}
+.remove-thumbnail-button{
+  margin: 0 auto;
+  display: block;
+  width: 121px;
+  display: none;
+}

@@ -33,11 +33,11 @@
         </div>
 
         <div class="library-files-wrapper">
-            <?php foreach($pages as $page): ?>
-                <div class="media-wrapper" data-toggle="modal" data-target="#myModal<?php echo $page->id;?>">
-                    <img src="http://ci-blog.loc/<?php echo $page->name ?>" alt="">
+            <?php foreach($files as $file): ?>
+                <div class="media-wrapper" data-toggle="modal" data-target="#myModal<?php echo $file->id;?>">
+                    <img src="http://ci-blog.loc/<?php echo $file->name ?>" alt="">
                 </div>
-                <div id="myModal<?php echo $page->id;?>" class="modal fade" role="dialog">
+                <div id="myModal<?php echo $file->id;?>" class="modal fade" role="dialog">
                     <div class="modal-dialog">
 
                         <!-- Modal content-->
@@ -47,10 +47,10 @@
                             <h4 class="modal-title">File details</h4>
                         </div>
                         <div class="modal-body">
-                            <img src="http://ci-blog.loc/<?php echo $page->name ?>" alt="">
+                            <img src="http://ci-blog.loc/<?php echo $file->name ?>" alt="">
                             <hr>
                             <form action="/admin/media/delete" method="post">
-                                <input type="hidden" name="file_to_delete" value="<?php echo $page->id;?>">
+                                <input type="hidden" name="file_to_delete" value="<?php echo $file->id;?>">
                                 <input type="submit" value="Delete file">
                             </form>
                         </div>

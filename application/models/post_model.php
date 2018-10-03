@@ -14,9 +14,9 @@ class Post_model extends CI_Model
     $this->db->insert('posts', $data);
   }
 
-  public function list_pages( $limit, $offset)
+  public function list_posts( $limit, $offset)
   {
-    $query = $this->db->order_by('id','DESC')->get( 'pages', $limit, $offset );
+    $query = $this->db->order_by('id','DESC')->get( 'posts', $limit, $offset );
 
     return $query->result();
   }

@@ -23,8 +23,10 @@
 	<script>
 		CKEDITOR.replace( 'body' ,{
 			height: 500,
-			filebrowserBrowseUrl: '/admin/media/list',
-    		filebrowserUploadUrl: '/admin/upload/upload'
+			filebrowserBrowseUrl: '/admin/media/files',
+    	filebrowserUploadUrl: '/admin/upload/upload',
+			image_previewText: ' ',
+
 		});
 	</script>
 </body>

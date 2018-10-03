@@ -20,7 +20,8 @@
             <textarea class="form-control" name="body" id="body" rows="20"><?=set_value('body')?></textarea>
         </div>
         <?php echo form_error('body'); ?>
-        <button type="submit" name="submit" class="btn btn-primary">Add page</button>
+        <button type="submit" class="btn btn-success pull-left"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Save post</button>
+            <a href="/admin/post/list" class="btn btn-primary pull-right"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>List posts</a>
         
     </div><!--end of lklleft column-->
 
@@ -38,8 +39,10 @@
         </div>
         <div class="post-thumbnail form-group">
             <p><strong>Thumbnail picture</strong></p>
-            <input onchange="document.getElementById('thumb-image').src = window.URL.createObjectURL(this.files[0])" type="file" name="thumbnail"class="form-control">
-            <img id="thumb-image" src="<?php echo base_url().'/assets/img/no-image.png';?>" alt="your image" style="max-width: 100%;margin-top:5px" />
+            <a id="select_thumbnail" class="btn btn-default btn-block" href="#">Select thumbnail</a>
+            <input type="hidden" id="thumb_input" name="thumbnail" value="">
+            <img id="thumb-image" src="<?php echo base_url().'/assets/img/no-image.png';?>"/>
+            <a href="#" class="text-primary remove-thumbnail-button">Remove thumbnail</a>
         </div>
         <?php echo form_error('thumbnail'); ?>
         <div class="post-thumbnail form-group">

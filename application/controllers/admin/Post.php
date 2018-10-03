@@ -21,22 +21,22 @@ class Post extends CI_Controller {
     //List pages
     public function list()
     {
-        $config['base_url'] = site_url('admin/page/list');
-        $config['total_rows'] = $this->db->get('pages')->num_rows();
+        $config['base_url'] = site_url('admin/post/list');
+        $config['total_rows'] = $this->db->get('posts')->num_rows();
         $config['per_page'] = 10;
         $this->pagination->initialize($config);
 
-        $this->load->model("page_model");
+        $this->load->model("post_model");
         $limit= $config['per_page'];
         $page_id = $this->uri->segment(4) ? $this->uri->segment(4) : 1;
         $offset =($page_id - 1) * $limit;
-        $data['pages'] = $this->page_model->list_pages( $limit , $offset );
+        $data['posts'] = $this->post_model->list_posts( $limit , $offset );
         $data['total_rows']= $config['total_rows'];
         $data['per_page']= $config['per_page'];
         
         $this->load->view('admin/includes/header.php');
         $this->load->view('admin/includes/sidebar.php');
-        $this->load->view('admin/page/list.php',$data);
+        $this->load->view('admin/post/list.php',$data);
         $this->load->view('admin/includes/footer.php');
     }
     public function add()
@@ -62,57 +62,34 @@ class Post extends CI_Controller {
             $body = $this->input->post("body");
             $publish_date = $this->input->post('publish_date');
             $categories = $this->input->post("categories");
+            $thumbnail= $this->input->post("thumbnail");
 
-            if(empty($_FILES['thumbnail']['name']))
-            {
-                $this->insertPost( $title, $body, $categories, $publish_date);
-            }
-            else
-            {
-                // $year = date('Y');
-                // $month = date('m');
-                // mkdir("./uploads/2018/05",true,true);
-                $config['upload_path']          = './uploads/';
-                $this->load->library('upload', $config);
-                $this->upload->do_upload('thumbnail');
-
-                $data_upload = $this->upload->data();
-                $config['source_image'] = './uploads/'.$data_upload['file_name'];
-
-                $config['image_library'] = 'gd2';
-                $config['create_thumb'] = TRUE;
-                $config['maintain_ratio'] = TRUE;
-                $config['width']         = 75;
-                $config['height']       = 50;    
-                $this->load->library('image_lib', $config);
-                $this->image_lib->resize();
-                $this->insertPost( $title, $body, $categories, $publish_date, $data_upload['file_name'] );
-
-            }
+            $this->insertPost( $title, $body, $categories, $publish_date, $thumbnail );
         }
     }
 
     public function file_check($str)
     {
-        $this->load->helper('file');
+        return true;
+        // $this->load->helper('file');
         
-        $allowed_mime_type_arr = array('image/jpeg','image/pjpeg','image/png','image/x-png');
-        $mime = get_mime_by_extension($_FILES['thumbnail']['name']);
-        if(isset($_FILES['thumbnail']['name']) && $_FILES['thumbnail']['name']!=""){
-            if(in_array($mime, $allowed_mime_type_arr)){
-                if($_FILES['thumbnail']['size'] > 1048576 || $_FILES['thumbnail']['size'] == 0){
-                    $this->form_validation->set_message('file_check', 'File should not be bigger than 1 mb.');
-                    return false;
-                }
-                return true;
-            }else{
-                $this->form_validation->set_message('file_check', 'Please select only jpg or png file.');
-                return false;
-            }
-        }else{
-            $this->form_validation->set_message('file_check', 'Please choose a file to upload.');
-            return false;
-        }
+        // $allowed_mime_type_arr = array('image/jpeg','image/pjpeg','image/png','image/x-png');
+        // $mime = get_mime_by_extension($_FILES['thumbnail']['name']);
+        // if(isset($_FILES['thumbnail']['name']) && $_FILES['thumbnail']['name']!=""){
+        //     if(in_array($mime, $allowed_mime_type_arr)){
+        //         if($_FILES['thumbnail']['size'] > 1048576 || $_FILES['thumbnail']['size'] == 0){
+        //             $this->form_validation->set_message('file_check', 'File should not be bigger than 1 mb.');
+        //             return false;
+        //         }
+        //         return true;
+        //     }else{
+        //         $this->form_validation->set_message('file_check', 'Please select only jpg or png file.');
+        //         return false;
+        //     }
+        // }else{
+        //     $this->form_validation->set_message('file_check', 'Please choose a file to upload.');
+        //     return false;
+        // }
     }
 
 
@@ -166,26 +143,26 @@ class Post extends CI_Controller {
     }
 
     //DELETE PAGE
-    public function delete( $id, $page_id )
+    public function delete( $id, $post_id )
     {
         $this->db->where('id', $id);
-        $this->db->delete('pages');
+        $this->db->delete('posts');
 
-        redirect("admin/page/list/".$page_id);
+        redirect("admin/post/list/".$post_id);
         
     }
 
     public function bulk_delete()
     {
-        $pages=$this->input->post('pages');
-        if(!empty($pages))
+        $posts=$this->input->post('posts');
+        if(!empty($posts))
         {
-            foreach($pages as $page_id){
-                $this->db->where('id', $page_id);
-                $this->db->delete('pages');
+            foreach($posts as $post_id){
+                $this->db->where('id', $post_id);
+                $this->db->delete('posts');
             }
             
-            redirect("admin/page/list");
+            redirect("admin/post/list");
         }
     }
 
